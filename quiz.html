@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Quiz</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: rgb(240, 245, 242);
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #333;
+        text-shadow: 1px 1px #ccc;
+      }
+
+      #quiz {
+        margin-bottom: 20px;
+      }
+
+      #question {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+        text-shadow: 1px 1px #ccc;
+      }
+
+      #choices label {
+        display: block;
+        margin-bottom: 10px;
+        color: #333;
+        text-shadow: 1px 1px #ccc;
+      }
+
+      #submit {
+        display: block;
+        margin: 20px auto;
+        background-color: #4CAF50;
+        color: #026d2b;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #submit:hover {
+        background-color: #3e8e41;
+      }
+
+      #results {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+        text-shadow: 1px 1px #440606;
+      }
+
+      #results.correct {
+        color: #4CAF50;
+      }
+
+      #results.incorrect {
+        color: #F44336;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to the Quiz!</h1>
+      <div id="quiz">
+        <div id="question"></div>
+        <div id="choices"></div>
+        <button id="submit">Submit</button>
+        <div id="results"></div>
+      </div>
+      <script>
+        const quiz = [
+          {
+            question: "Which statement would you use to print the string Hello in Java?",
+            choices: ["console.log Hello", "Console.WriteLine Hello", "System.out.println Hello", "print Hello"],
+            answer: 2
+          },
+          {
+            question: "The default value of a static integer variable of a class in Java is?",
+            choices: ["0", "1 ", "Garbage value", "Null "],
+            answer: 0
+          },
+          {
+            question: "Which statement is not true in java language?",
+            choices: ["A public member of a class can be accessed in all the packages.", "A private member of a class cannot be accessed by the methods of the same class.", "A private member of a class cannot be accessed from its derived class.", "A protected member of a class can be accessed from its derived class."],
+            answer: 1
+          },
+          // Add more questions here
+          {
+            question: "To prevent any method from overriding, we declare the method as",
+            choices: ["static ", "const ", "final", "abstract "],
+            answer: 2
+          },
+          {
+            question: "Which one of the following is not true?",
+            choices: ["A class containing abstract methods is called an abstract class.", "Abstract methods should be implemented in the derived class.", "An abstract class cannot have non-abstract methods.", "A class must be qualified as ‘abstract’ class, if it contains one abstract method"],
+            answer: 2
+          },
+          {
+            question: "The fields in an interface are implicitly specified as?",
+            choices: [" static only", "protected ", "private", "both static and final"],
+            answer: 3
+          },
+          {
+            question: "Which of the following is not true?",
+            choices: ["An interface can extend another interface.", "A class which is implementing an interface must implement all the methods of the interface.", "An interface can implement another interface.", "An interface is a solution for multiple inheritance in java."],
+            answer: 2
+          },
+          {
+            question: "Which of the following is TRUE?",
+            choices: ["A finally block is executed before the catch block but after the try block.", " A finally block is executed whether an exception is thrown or not.", "A finally block is executed, only after the catch block is executed", "A finally block is executed, only if an exception occurs."],
+            answer: 1
+          },
+          {
+            question: "Which of the following is true?",
+            choices: ["In java, an instance field declared public generates a compilation error.", "int is the name of a class available in the package java.lang", "Instance variable names may only contain letters and digits.", "A class has always a constructor (possibly automatically supplied by the java compiler).."],
+            answer: 3
+          },
+          {
+            question: "The java run time system automatically calls this method while garbage collection.",
+            choices: ["finalizer", "finalize", "finally", "finalized"],
+            answer: 1
+          },
+        ];
+
+        const questionEl = document.getElementById("question");
+        const choicesEl = document.getElementById("choices");
+        const submitBtn = document.getElementById("submit");
+        const resultsEl = document.getElementById("results");
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+          const question = quiz[currentQuestion].question;
+          const choices = quiz[currentQuestion].choices;
+
+          questionEl.innerHTML = question;
+
+          choicesEl.innerHTML = "";
+
+         
+          for (let i = 0; i < choices.length; i++) {
+            const choice = choices[i];
+            const radioBtn = document.createElement("input");
+            radioBtn.type = "radio";
+            radioBtn.name = "choice";
+            radioBtn.value = i;
+            const label = document.createElement("label");
+            label.appendChild(radioBtn);
+            label.appendChild(document.createTextNode(choice));
+            choicesEl.appendChild(label);
+          }
+        }
+
+        function getSelected() {
+          const radios = document.getElementsByName("choice");
+          for (let i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+              return parseInt(radios[i].value);
+            }
+          }
+          return -1;
+        }
+
+        function submitQuestion() {
+          const selected = getSelected();
+          if (selected < 0) {
+            return;
+          }
+          const answer = quiz[currentQuestion].answer;
+          if (selected === answer) {
+            score++;
+            resultsEl.innerHTML = "Correct!";
+            resultsEl.classList.add("correct");
+            resultsEl.classList.remove("incorrect");
+          } else {
+            resultsEl.innerHTML = `Incorrect. The correct answer was ${quiz[currentQuestion].choices[answer]}.`;
+            resultsEl.classList.add("incorrect");
+            resultsEl.classList.remove("correct");
+          }
+          currentQuestion++;
+          if (currentQuestion >= quiz.length) {
+            // Quiz is over
+            showResults();
+          } else {
+            loadQuestion();
+          }
+        }
+
+        function showResults() {
+          quiz.innerHTML = `<h2>You scored ${score} out of ${quiz.length}!</h2>`;
+          submitBtn.style.display = "none";
+        }
+
+        loadQuestion();
+        submitBtn.addEventListener("click", submitQuestion);
+      </script>
+    </div>
+  </body>
+</html>
